@@ -1,5 +1,7 @@
 package qa.guru.yanot;
 
+import com.codeborne.selenide.Selenide;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,11 +22,17 @@ public class HomeWorkParameterized {
 
     @BeforeEach
     void beforeEach() {
-        open("https://ru.wikipedia.org/");}
+        open("https://ru.wikipedia.org/");
+    }
 
-    static Stream<Arguments> commonSearchDataProvider(){
+    @AfterEach
+    void closeBrowser() {
+        Selenide.closeWebDriver();
+    }
+
+    static Stream<Arguments> commonSearchDataProvider() {
         return Stream.of(
-                Arguments.of("Металлика", "Metallica была основана в Лос-Анджелесе 28 октября 1981 года"),
+                Arguments.of("Metallica", "Metallica была основана в Лос-Анджелесе 28 октября 1981 года"),
                 Arguments.of("Джеймс Хетфилд", "вокалист и ритм-гитарист метал-группы Metallica")
         );
     }
@@ -32,27 +40,30 @@ public class HomeWorkParameterized {
     @Disabled
     @ValueSource(strings = {"Металлика", "Джеймс Хетфилд"})
     @ParameterizedTest(name = "Тестирование с тестданными: {0}")
-    void searchValueSource(String testData){
-    $("[id='mw-head']").$("[id='p-search']").click();
-    $("[id='searchInput']").setValue(testData).pressEnter();
-    $("[id='content']").shouldHave(text(testData));
+    void searchValueSource(String testData) {
+        $("#mw-head").$("#p-search").click();
+        $("#searchInput").setValue(testData);
+        $("#searchButton").pressEnter();
+        $("#content").shouldHave(text(testData));
     }
 
     @Disabled
     @CsvSource(value = {"Металлика, Metallica была основана в Лос-Анджелесе 28 октября 1981 года",
             "Джеймс Хетфилд, вокалист и ритм-гитарист метал-группы Metallica"})
     @ParameterizedTest(name = "Тестирование с тестданными: {0}")
-    void searchCsvSource(String testData, String expectedResult){
-        $("[id='mw-head']").$("[id='p-search']").click();
-        $("[id='searchInput']").setValue(testData).pressEnter();
-        $("[id='content']").shouldHave(text(expectedResult));
+    void searchCsvSource(String testData, String expectedResult) {
+        $("#mw-head").$("#p-search").click();
+        $("#searchInput").setValue(testData);
+        $("#searchButton").pressEnter();
+        $("#content").shouldHave(text(expectedResult));
     }
 
     @MethodSource("commonSearchDataProvider")
     @ParameterizedTest(name = "Тестирование с тестданными: {0}")
-    void searchWithMethodSourceTest(String testData, String expectedResult){
-        $("[id='mw-head']").$("[id='p-search']").click();
-        $("[id='searchInput']").setValue(testData).pressEnter();
-        $("[id='content']").shouldHave(text(expectedResult));
+    void searchWithMethodSourceTest(String testData, String expectedResult) {
+        $("#mw-head").$("#p-search").click();
+        $("#searchInput").setValue(testData);
+        $("#searchButton").pressEnter();
+        $("#content").shouldHave(text(expectedResult));
     }
 }
